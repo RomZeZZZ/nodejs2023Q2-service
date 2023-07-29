@@ -1,12 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { AuthUser } from "../user/dto/user.dto";
 import { v4 as uuidv4, validate as validateUuid } from 'uuid';
-import { Track, User } from 'src/db/db';
+import { Artist, Track, User } from 'src/db/db';
 import { TrackReq, UpdateTrackDto } from 'src/track/dto/track.dto';
+import { ArtistReq, UpdateArtistDto } from 'src/artists/dto/artist.dto';
 @Injectable()
 export class DatabaseService {
     public usersDb: User[] = [];
     public tracksDb: Track[] = [];
+    public artistsDb: Artist[] = [];
+    //User-----------------------------------
     addUser(userData: AuthUser){
         const newUser = {
             id: this.generateUuid(), // uuid v4
@@ -68,6 +71,41 @@ export class DatabaseService {
         const trackIndex = this.tracksDb.findIndex((track) => track.id === id);
         this.tracksDb.splice(trackIndex, 1);
     }
+    //Artist--------------------------------
+    getArtistsDb(): Artist[] {
+        return this.artistsDb; // Method to return the tracksDb array
+    }
+    getArtistById(id: string): Artist | null {
+        const artist = this.artistsDb.find((artist) => artist.id === id);
+        return artist ? artist : null; // Method to return the track by id
+    }
+    addArtist(newArtistRequestData: ArtistReq){
+        const newArtist = {
+            id: this.generateUuid(), // uuid v4
+            name: newArtistRequestData.name,
+            grammy: newArtistRequestData.grammy,
+        };
+        this.artistsDb.push(newArtist);
+        return newArtist;
+    }
+    updateArtist(id: string, newInfo: UpdateArtistDto){
+        const artistIndex = this.artistsDb.findIndex((artist) => artist.id === id);
+        this.artistsDb[artistIndex].name = newInfo.name;
+        this.artistsDb[artistIndex].grammy = newInfo.grammy;
+        const returnArtist = this.artistsDb[artistIndex];
+        return returnArtist;
+    }
+    deleteArtistById(id: string) {
+        const artistIndex = this.artistsDb.findIndex((artist) => artist.id === id);
+        const trackIndex = this.tracksDb.findIndex((track) => track.artistId === id);
+        if (trackIndex !== -1) {
+            this.tracksDb[trackIndex].artistId = null;
+        }
+        
+        this.artistsDb.splice(artistIndex, 1);
+
+    }
+    //--------------------------------------
     generateUuid(): string {
         const uuid = uuidv4(); // Generate UUIDv4
         return uuid;
