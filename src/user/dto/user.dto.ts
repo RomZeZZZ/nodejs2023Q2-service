@@ -5,3 +5,9 @@ export class AuthUser {
     @IsNotEmpty()
     password: string
 }
+export class UpdatePasswordDto {
+    @IsNotEmpty()
+    oldPassword: string;
+    @IsNotEmpty()
+    newPassword: string
+}
