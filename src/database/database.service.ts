@@ -1,14 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { AuthUser } from "../user/dto/user.dto";
 import { v4 as uuidv4, validate as validateUuid } from 'uuid';
-import { Artist, Track, User } from 'src/db/db';
+import { Album, Artist, Track, User } from 'src/db/db';
 import { TrackReq, UpdateTrackDto } from 'src/track/dto/track.dto';
 import { ArtistReq, UpdateArtistDto } from 'src/artists/dto/artist.dto';
+import { AlbumReq, UpdateAlbumDto } from 'src/album/dto/album.dto';
 @Injectable()
 export class DatabaseService {
     public usersDb: User[] = [];
     public tracksDb: Track[] = [];
     public artistsDb: Artist[] = [];
+    public albumsDb: Album[] = [];
     //User-----------------------------------
     addUser(userData: AuthUser){
         const newUser = {
@@ -98,14 +100,51 @@ export class DatabaseService {
     deleteArtistById(id: string) {
         const artistIndex = this.artistsDb.findIndex((artist) => artist.id === id);
         const trackIndex = this.tracksDb.findIndex((track) => track.artistId === id);
+        const albumIndex = this.albumsDb.findIndex((album) => album.artistId === id);
         if (trackIndex !== -1) {
             this.tracksDb[trackIndex].artistId = null;
         }
-        
+        if (albumIndex !== -1) {
+            this.albumsDb[albumIndex].artistId = null;
+        }
         this.artistsDb.splice(artistIndex, 1);
+    }
+    //Album--------------------------------------
+    getAlbumsDb(): Album[] {
+        return this.albumsDb; 
+    }
+    getAlbumById(id: string): Album | null {
+        const album = this.albumsDb.find((album) => album.id === id);
+        return album ? album : null; 
+    }
+    addAlbum(newAlbumRequestData: AlbumReq){
+        const newAlbum = {
+            id: this.generateUuid(), 
+            name: newAlbumRequestData.name,
+            year: newAlbumRequestData.year,
+            artistId: newAlbumRequestData.artistId
+        };
+        this.albumsDb.push(newAlbum);
+        return newAlbum;
+    }
+    updateAlbum(id: string, newInfo: UpdateAlbumDto){
+        const albumIndex = this.albumsDb.findIndex((album) => album.id === id);
+        this.albumsDb[albumIndex].name = newInfo.name;
+        this.albumsDb[albumIndex].year = newInfo.year;
+        this.albumsDb[albumIndex].artistId = newInfo.artistId;
+        const returnAlbum = this.albumsDb[albumIndex];
+        return returnAlbum;
+    }
+    deleteAlbumById(id: string) {
+        const albumIndex = this.albumsDb.findIndex((album) => album.id === id);
+        const trackIndex = this.tracksDb.findIndex((album) => album.albumId === id);
+        if (trackIndex !== -1) {
+            this.tracksDb[trackIndex].albumId = null;
+        }
+        this.albumsDb.splice(albumIndex, 1);
 
     }
-    //--------------------------------------
+    //------------------------------------------
     generateUuid(): string {
         const uuid = uuidv4(); // Generate UUIDv4
         return uuid;
