@@ -29,5 +29,4 @@ interface Favorites {
   albums: string[]; // favorite albums ids
   tracks: string[]; // favorite tracks ids
 }
-export const authDb = [];
 export { User, Artist, Track, Album, Favorites };

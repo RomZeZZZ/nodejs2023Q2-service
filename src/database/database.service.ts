@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { AuthUser } from '../user/dto/user.dto';
 import { v4 as uuidv4, validate as validateUuid } from 'uuid';
-import { Album, Artist, Favorites, Track, User } from 'src/db/db';
+import { Album, Artist, Favorites, Track, User } from 'src/types/interfaces';
 import { TrackReq, UpdateTrackDto } from 'src/track/dto/track.dto';
 import { ArtistReq, UpdateArtistDto } from 'src/artists/dto/artist.dto';
 import { AlbumReq, UpdateAlbumDto } from 'src/album/dto/album.dto';
