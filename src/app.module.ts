@@ -9,6 +9,7 @@ import { AlbumModule } from './album/album.module';
 import { FavsController } from './favs/favs.controller';
 import { FavsService } from './favs/favs.service';
 import { FavsModule } from './favs/favs.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { FavsModule } from './favs/favs.module';
     ArtistsModule,
     AlbumModule,
     FavsModule,
+    ConfigModule.forRoot(),
   ],
   controllers: [AppController, FavsController],
   providers: [AppService, FavsService],
