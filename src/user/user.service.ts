@@ -5,7 +5,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { DatabaseService } from 'src/database/database.service';
+import { DatabaseService } from '../database/database.service';
 import { AuthUser, UpdatePasswordDto } from './dto/user.dto';
 @Injectable()
 export class UserService {
