@@ -1,19 +1,30 @@
-export const parser = '@typescript-eslint/parser';
-export const parserOptions = {
-  project: 'tsconfig.json',
+const parser = '@typescript-eslint/parser';
+const parserOptions = {
+  project: path.resolve(__dirname, 'tsconfig.json'),
   sourceType: 'module',
 };
-export const plugins = ['@typescript-eslint/eslint-plugin'];
-export const eslintExtends = ['plugin:@typescript-eslint/recommended', 'plugin:prettier/recommended'];
-export const root = true;
-export const env = {
+const plugins = ['@typescript-eslint/eslint-plugin'];
+const eslintExtends = ['plugin:@typescript-eslint/recommended', 'plugin:prettier/recommended'];
+const root = true;
+const env = {
   node: true,
   jest: true,
 };
-export const ignorePatterns = ['.eslintrc.js'];
-export const rules = {
+const ignorePatterns = ['.eslintrc.js'];
+const rules = {
   '@typescript-eslint/interface-name-prefix': 'off',
   '@typescript-eslint/explicit-function-return-type': 'off',
   '@typescript-eslint/explicit-module-boundary-types': 'off',
   '@typescript-eslint/no-explicit-any': 'off',
+};
+
+module.exports = {
+  parser,
+  parserOptions,
+  plugins,
+  extends: eslintExtends,
+  root,
+  env,
+  ignorePatterns,
+  rules,
 };
