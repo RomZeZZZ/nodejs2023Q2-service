@@ -11,8 +11,8 @@ import { AuthUser, UpdatePasswordDto } from './dto/user.dto';
 export class UserService {
   @Inject(DatabaseService)
   private readonly usersDb: DatabaseService;
-  createUser(newUser: AuthUser) {
-    const user = this.usersDb.addUser(newUser);
+  async createUser(newUser: AuthUser) {
+    const user = await this.usersDb.addUser(newUser);
     const modifiedUser = Object.assign({}, user);
     delete modifiedUser.password;
     return modifiedUser;

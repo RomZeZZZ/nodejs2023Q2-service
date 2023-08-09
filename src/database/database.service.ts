@@ -5,6 +5,9 @@ import { Album, Artist, Favorites, Track, User } from 'src/types/interfaces';
 import { TrackReq, UpdateTrackDto } from 'src/track/dto/track.dto';
 import { ArtistReq, UpdateArtistDto } from 'src/artists/dto/artist.dto';
 import { AlbumReq, UpdateAlbumDto } from 'src/album/dto/album.dto';
+import { AppDataSource } from 'src/data-source';
+import { UserEntity } from 'src/entity/User';
+
 @Injectable()
 export class DatabaseService {
   public usersDb: User[] = [];
@@ -17,17 +20,28 @@ export class DatabaseService {
     tracks: [],
   };
   //User-----------------------------------
-  addUser(userData: AuthUser) {
-    const newUser = {
-      id: this.generateUuid(), // uuid v4
+  async addUser(userData: AuthUser) {
+    
+    const userRepository = AppDataSource.getRepository(UserEntity);
+    const user = new UserEntity();
+
+    const id = this.generateUuid();
+
+    user.id = id; // uuid v4
+    user.login = userData.login;
+    user.password= userData.password;
+    user.version = 1, // integer number, increments on update
+    user.createdAt = this.generateCurrentTime(); // timestamp of creation
+    user.updatedAt = this.generateCurrentTime();
+    await userRepository.save(user);
+    return {
+      id: id, // uuid v4
       login: userData.login,
       password: userData.password,
       version: 1, // integer number, increments on update
       createdAt: this.generateCurrentTime(), // timestamp of creation
       updatedAt: this.generateCurrentTime(),
     };
-    this.usersDb.push(newUser);
-    return newUser;
   }
   updateUserPassword(id: string, newPassword: string) {
     const userIndex = this.usersDb.findIndex((user) => user.id === id);
