@@ -21,11 +21,9 @@ export class DatabaseService {
   };
   //User-----------------------------------
   async addUser(userData: AuthUser) {
-    
-    const userRepository = AppDataSource.getRepository(UserEntity);
-    const user = new UserEntity();
-
     const id = this.generateUuid();
+
+    const user = new UserEntity();
 
     user.id = id; // uuid v4
     user.login = userData.login;
@@ -33,7 +31,8 @@ export class DatabaseService {
     user.version = 1, // integer number, increments on update
     user.createdAt = this.generateCurrentTime(); // timestamp of creation
     user.updatedAt = this.generateCurrentTime();
-    await userRepository.save(user);
+    await AppDataSource.manager.save(user);
+    
     return {
       id: id, // uuid v4
       login: userData.login,

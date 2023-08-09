@@ -25,9 +25,8 @@ export class UserController {
   }
   @HttpCode(201)
   @Post()
-  signup(@Body() dto: AuthUser) {
-    console.log('dto')
-    return this.userService.createUser(dto);
+  async signup(@Body() dto: AuthUser) {
+    return await this.userService.createUser(dto);
   }
   @HttpCode(200)
   @Put(':id')
