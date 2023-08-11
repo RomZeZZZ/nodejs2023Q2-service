@@ -1,59 +1,81 @@
 import {
   BadRequestException,
   ForbiddenException,
-  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { DatabaseService } from '../database/database.service';
 import { AuthUser, UpdatePasswordDto } from './dto/user.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { UserEntity } from '../entity/User';
+import { Repository } from 'typeorm';
+import { v4 as uuidv4, validate as validateUuid } from 'uuid';
+import { instanceToPlain } from 'class-transformer';
 @Injectable()
 export class UserService {
-  @Inject(DatabaseService)
-  private readonly usersDb: DatabaseService;
+  constructor(
+    @InjectRepository(UserEntity)
+    private usersRepository: Repository<UserEntity>,
+  ) {}
   async createUser(newUser: AuthUser) {
-    const user = await this.usersDb.addUser(newUser);
-    const modifiedUser = Object.assign({}, user);
-    delete modifiedUser.password;
-    return modifiedUser;
+    const user = new UserEntity();
+    user.id = this.generateUuid();
+    user.login = newUser.login;
+    user.password= newUser.password;
+    user.version = 1,
+    user.createdAt = this.generateCurrentTime();
+    user.updatedAt = this.generateCurrentTime();
+    await this.usersRepository.manager.save(user);
+    return instanceToPlain(user);
   }
-  getUsers() {
-    return this.usersDb.getUsersDb(); // Return all users in the database
+  async getUsers(): Promise<UserEntity[]>  {
+    return this.usersRepository.find();
   }
-  getUser(id: string) {
-    if (!this.usersDb.validateId(id)) {
+  async getUser(id: string) {
+    if (!this.validateId(id)) {
       throw new BadRequestException('Invalid user ID'); // 400
     }
-    const user = this.usersDb.getUserById(id);
+    const user = await this.usersRepository.findOneBy({ id });
     if (!user) {
       throw new NotFoundException('User not found'); // 404
     }
-    return user;
+    return instanceToPlain(user);
   }
-  deleteuser(id: string) {
-    if (!this.usersDb.validateId(id)) {
+  async deleteuser(id: string) {
+    if (!this.validateId(id)) {
       throw new BadRequestException('Invalid user ID');
     }
-    const user = this.usersDb.getUserById(id);
+    const user = await this.usersRepository.findOneBy({ id });
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    this.usersDb.deleteUserById(id);
+    await this.usersRepository.delete(id);
   }
-  updatePassword(newPass: UpdatePasswordDto, id: string) {
-    if (!this.usersDb.validateId(id)) {
+  async updatePassword(newPass: UpdatePasswordDto, id: string) {
+    if (!this.validateId(id)) {
       throw new BadRequestException('Invalid user ID');
     }
-    const user = this.usersDb.getUserById(id);
+    const user = await this.usersRepository.findOneBy({ id });
     if (!user) {
       throw new NotFoundException('User not found');
     }
     if (user.password !== newPass.oldPassword) {
-      throw new ForbiddenException('Old password is wrong'); //403
+      throw new ForbiddenException('Old password is wrong');
     }
-    const returnUser = this.usersDb.updateUserPassword(id, newPass.newPassword);
-    const modifiedUser = Object.assign({}, returnUser);
-    delete modifiedUser.password;
-    return modifiedUser;
+    user.password = newPass.newPassword;
+    user.version = user.version + 1;
+    user.updatedAt = this.generateCurrentTime();
+    await this.usersRepository.save(user);
+    return instanceToPlain(user);
+  }
+  generateUuid(): string {
+    const uuid = uuidv4();
+    return uuid;
+  }
+  validateId(id: string): boolean {
+    return validateUuid(id);
+  }
+  generateCurrentTime(): number {
+    const now = new Date().getTime(); 
+    return now;
   }
 }
