@@ -14,9 +14,9 @@ export class UserEntity {
     @Column()
     version: number
 
-    @Column()
+    @Column("bigint")
     createdAt: number
 
-    @Column()
+    @Column("bigint")
     updatedAt: number
 }

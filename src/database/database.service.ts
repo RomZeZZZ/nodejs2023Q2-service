@@ -5,8 +5,8 @@ import { Album, Artist, Favorites, Track, User } from 'src/types/interfaces';
 import { TrackReq, UpdateTrackDto } from 'src/track/dto/track.dto';
 import { ArtistReq, UpdateArtistDto } from 'src/artists/dto/artist.dto';
 import { AlbumReq, UpdateAlbumDto } from 'src/album/dto/album.dto';
-import { AppDataSource } from 'src/data-source';
-import { UserEntity } from 'src/entity/User';
+import { AppDataSource } from '../data-source';
+import { UserEntity } from '../entity/User';
 
 @Injectable()
 export class DatabaseService {

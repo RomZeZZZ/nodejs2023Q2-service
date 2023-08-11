@@ -10,6 +10,8 @@ import { FavsController } from './favs/favs.controller';
 import { FavsService } from './favs/favs.service';
 import { FavsModule } from './favs/favs.module';
 import { ConfigModule } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { UserEntity } from "./entity/User"
 
 @Module({
   imports: [
@@ -20,6 +22,17 @@ import { ConfigModule } from '@nestjs/config';
     AlbumModule,
     FavsModule,
     ConfigModule.forRoot(),
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      host: 'localhost',
+      port: 4040,
+      username: 'test',
+      password: 'test',
+      database: 'test_db',
+      synchronize: true,
+      logging: false,
+      entities: [UserEntity],
+    }),
   ],
   controllers: [AppController, FavsController],
   providers: [AppService, FavsService],
