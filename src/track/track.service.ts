@@ -1,52 +1,77 @@
 import {
   BadRequestException,
-  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { TrackReq, UpdateTrackDto } from './dto/track.dto';
-import { DatabaseService } from '../database/database.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { TrackEntity } from '../entity/Track';
+import { Repository } from 'typeorm';
+import { v4 as uuidv4, validate as validateUuid } from 'uuid';
+import { instanceToPlain } from 'class-transformer';
 
 @Injectable()
 export class TrackService {
-  @Inject(DatabaseService)
-  private readonly tracksDb: DatabaseService;
-  getTracks() {
-    return this.tracksDb.getTracksDb(); // Return all tracks
+  constructor(
+    @InjectRepository(TrackEntity)
+    private tracksRepository: Repository<TrackEntity>,
+  ) {}
+  async createTrack(newTrackRequestData: TrackReq) {
+    const track = new TrackEntity();
+    track.id = this.generateUuid();
+    track.name = newTrackRequestData.name;
+    const id = newTrackRequestData.artistId;
+    track.artistId = newTrackRequestData.artistId || null;
+    track.albumId = newTrackRequestData.albumId || null;
+    track.duration = newTrackRequestData.duration;
+    await this.tracksRepository.manager.save(track);
+    return instanceToPlain(track);
   }
-  getTrack(id: string) {
-    if (!this.tracksDb.validateId(id)) {
-      throw new BadRequestException('Invalid track ID'); // 400
-    }
-    const track = this.tracksDb.getTrackById(id);
-    if (!track) {
-      throw new NotFoundException('Track not found'); // 404
-    }
-    return track;
+  async getTracks() {
+    return await this.tracksRepository.find();
   }
-  createTrack(newTrackRequestData: TrackReq) {
-    const track = this.tracksDb.addTrack(newTrackRequestData);
-    return track;
-  }
-  updateTrack(newInfo: UpdateTrackDto, id: string) {
-    if (!this.tracksDb.validateId(id)) {
+  async getTrack(id: string) {
+    if (!this.validateId(id)) {
       throw new BadRequestException('Invalid track ID');
     }
-    const track = this.tracksDb.getTrackById(id);
+    const track = await this.tracksRepository.findOneBy({ id });
     if (!track) {
       throw new NotFoundException('Track not found');
     }
-    const returnTrack = this.tracksDb.updateTrack(id, newInfo);
-    return returnTrack;
+    return instanceToPlain(track);
   }
-  deletetrack(id: string) {
-    if (!this.tracksDb.validateId(id)) {
+  async updateTrack(newInfo: UpdateTrackDto, id: string) {
+    if (!this.validateId(id)) {
+      throw new BadRequestException('Invalid track ID');
+    }
+    const track = await this.tracksRepository.findOneBy({ id });
+    if (!track) {
+      throw new NotFoundException('Track not found');
+    }
+    track.name = newInfo.name;
+    track.duration = newInfo.duration;
+    await this.tracksRepository.save(track);
+    return instanceToPlain(track);
+  }
+  async deletetrack(id: string) {
+    if (!this.validateId(id)) {
       throw new BadRequestException('Invalid user ID');
     }
-    const track = this.tracksDb.getTrackById(id);
+    const track = await this.tracksRepository.findOneBy({ id });
     if (!track) {
       throw new NotFoundException('User not found');
     }
-    this.tracksDb.deleteTrackById(id);
+    await this.tracksRepository.delete(id);
+  }
+  generateUuid(): string {
+    const uuid = uuidv4();
+    return uuid;
+  }
+  validateId(id: string): boolean {
+    return validateUuid(id);
+  }
+  generateCurrentTime(): number {
+    const now = new Date().getTime(); 
+    return now;
   }
 }
