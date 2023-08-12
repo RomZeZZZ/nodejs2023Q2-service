@@ -12,6 +12,9 @@ import { FavsModule } from './favs/favs.module';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from "./entity/User"
+import { TrackEntity } from './entity/Track';
+import { ArtistEntity } from './entity/Artist';
+import { AlbumEntity } from './entity/Albums';
 
 @Module({
   imports: [
@@ -31,7 +34,7 @@ import { UserEntity } from "./entity/User"
       database: 'test_db',
       synchronize: true,
       logging: false,
-      entities: [UserEntity],
+      entities: [UserEntity, TrackEntity, ArtistEntity, AlbumEntity],
     }),
   ],
   controllers: [AppController, FavsController],

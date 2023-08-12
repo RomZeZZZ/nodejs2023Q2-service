@@ -28,7 +28,7 @@ export class UserService {
     return instanceToPlain(user);
   }
   async getUsers(): Promise<UserEntity[]>  {
-    return this.usersRepository.find();
+    return await this.usersRepository.find();
   }
   async getUser(id: string) {
     if (!this.validateId(id)) {
