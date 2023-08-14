@@ -5,9 +5,9 @@ config();
 const conf = new ConfigService();
 export const dataSourceOptions: DataSourceOptions = {
   type: 'postgres',
-  host: 'localhost',
+  host: conf.get('POSTGRESS_HOST'),
   port: conf.get('POSTGRESS_PORT'),
-  username: conf.get('POSTGRESS_USERNAME'),
+  username: conf.get('POSTGRES_USER'),
   password: conf.get('POSTGRESS_PASSWORD'),
   database: conf.get('POSTGRESS_DB'),
   migrations: ['dist/migration/*{.ts,.js}'],
@@ -15,7 +15,7 @@ export const dataSourceOptions: DataSourceOptions = {
   migrationsTableName: 'migration',
   migrationsRun: false,
   synchronize: false,
-  logging: false,
+  logging: true,
 };
 const dataSource = new DataSource(dataSourceOptions);
 export default dataSource;
