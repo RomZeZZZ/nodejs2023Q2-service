@@ -11,7 +11,7 @@ npm install
 ## Running application using docker compose
 
 ```
-docker-compose up -d
+docker-compose up
 ```
 
 by default the application uses and exposes PORT 4000
