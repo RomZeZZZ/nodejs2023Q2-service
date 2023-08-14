@@ -8,7 +8,7 @@ import { AlbumModule } from './album/album.module';
 import { FavsModule } from './favs/favs.module';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { configDb } from './database/configDb';
+import { dataSourceOptions } from './database/configDb';
 @Module({
   imports: [
     UserModule,
@@ -17,7 +17,7 @@ import { configDb } from './database/configDb';
     AlbumModule,
     FavsModule,
     ConfigModule.forRoot(),
-    TypeOrmModule.forRoot(configDb),
+    TypeOrmModule.forRoot(dataSourceOptions),
   ],
   controllers: [AppController],
   providers: [AppService],
