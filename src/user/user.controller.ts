@@ -30,7 +30,10 @@ export class UserController {
   }
   @HttpCode(200)
   @Put(':id')
-  async changePassword(@Body() dto: UpdatePasswordDto, @Param('id') id: string) {
+  async changePassword(
+    @Body() dto: UpdatePasswordDto,
+    @Param('id') id: string,
+  ) {
     return await this.userService.updatePassword(dto, id);
   }
   @HttpCode(204)

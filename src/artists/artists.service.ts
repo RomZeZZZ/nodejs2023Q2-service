@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { ArtistReq, UpdateArtistDto } from './dto/artist.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ArtistEntity } from '../entity/Artist';
+import { ArtistEntity } from '../entity/Artist.entity';
 import { Repository } from 'typeorm';
 import { v4 as uuidv4, validate as validateUuid } from 'uuid';
 import { instanceToPlain } from 'class-transformer';
@@ -29,7 +29,7 @@ export class ArtistsService {
   }
   async getArtist(id: string) {
     if (!this.validateId(id)) {
-      throw new BadRequestException('Invalid Artist ID'); 
+      throw new BadRequestException('Invalid Artist ID');
     }
     const artist = await this.artistsRepository.findOneBy({ id });
     if (!artist) {

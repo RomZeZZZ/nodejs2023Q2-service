@@ -31,7 +31,10 @@ export class AlbumController {
   }
   @HttpCode(200)
   @Put(':id')
-  async updateAlbum(@Body() newInfoAlbum: UpdateAlbumDto, @Param('id') id: string) {
+  async updateAlbum(
+    @Body() newInfoAlbum: UpdateAlbumDto,
+    @Param('id') id: string,
+  ) {
     return await this.albumService.updateAlbum(newInfoAlbum, id);
   }
   @HttpCode(204)

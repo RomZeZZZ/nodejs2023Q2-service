@@ -5,15 +5,14 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FavAlbumsEntity } from '../entity/favEntity/FavAlbumsEntity';
-import { FavArtistsEntity } from '../entity/favEntity/FavArtistsEntity';
-import { FavTracksEntity } from '../entity/favEntity/FavTracksEntity';
+import { FavAlbumsEntity } from '../entity/favEntity/FavAlbumsEntity.entity';
+import { FavArtistsEntity } from '../entity/favEntity/FavArtistsEntity.entity';
+import { FavTracksEntity } from '../entity/favEntity/FavTracksEntity.entity';
 import { Repository } from 'typeorm';
 import { v4 as uuidv4, validate as validateUuid } from 'uuid';
-import { TrackEntity } from '../entity/Track';
-import { AlbumEntity } from '../entity/Albums';
-import { ArtistEntity } from '../entity/Artist';
-
+import { TrackEntity } from '../entity/Track.entity';
+import { AlbumEntity } from '../entity/Albums.entity';
+import { ArtistEntity } from '../entity/Artist.entity';
 
 @Injectable()
 export class FavsService {
@@ -33,22 +32,22 @@ export class FavsService {
   ) {}
   async getFavs() {
     const albums = await this.favsAlbumsRepository.find({
-      relations: { album: true }
+      relations: { album: true },
     });
     const tracks = await this.favsTrucksRepository.find({
-      relations: { track: true }
+      relations: { track: true },
     });
     const artist = await this.favsArtistsRepository.find({
-      relations: { artist: true }
+      relations: { artist: true },
     });
-    const returnAlbum = albums.map(album => album.album);
-    const returnTrack = tracks.map(tracks => tracks.track);
-    const returnArtist = artist.map(artist => artist.artist);
+    const returnAlbum = albums.map((album) => album.album);
+    const returnTrack = tracks.map((tracks) => tracks.track);
+    const returnArtist = artist.map((artist) => artist.artist);
     return {
       artists: returnArtist,
       albums: returnAlbum,
-      tracks: returnTrack
-    }
+      tracks: returnTrack,
+    };
   }
   async addTrack(id: string) {
     if (!this.validateId(id)) {
@@ -60,63 +59,69 @@ export class FavsService {
     }
     const trackId = await this.favsTrucksRepository.findOneBy({ trackId: id });
     if (!trackId) {
-        const favTrack = this.favsTrucksRepository.create({trackId: id});
-        await this.favsTrucksRepository.manager.save(favTrack);
+      const favTrack = this.favsTrucksRepository.create({ trackId: id });
+      await this.favsTrucksRepository.manager.save(favTrack);
     }
   }
   async deleteTrackFromFav(id: string) {
     if (!this.validateId(id)) {
-      throw new BadRequestException('Invalid track ID'); 
+      throw new BadRequestException('Invalid track ID');
     }
     const trackId = await this.favsTrucksRepository.findOneBy({ trackId: id });
     if (!trackId) {
-      throw new NotFoundException('Track not found'); 
+      throw new NotFoundException('Track not found');
     }
     return await this.favsTrucksRepository.delete({ trackId: id });
   }
   async addAlbum(id: string) {
     if (!this.validateId(id)) {
-      throw new BadRequestException('Invalid album ID'); 
+      throw new BadRequestException('Invalid album ID');
     }
     const isAlbumExist = await this.albumsRepository.findOneBy({ id });
     if (!isAlbumExist) {
-      throw new UnprocessableEntityException('Album not found'); 
+      throw new UnprocessableEntityException('Album not found');
     }
     const albumId = await this.favsAlbumsRepository.findOneBy({ albumId: id });
     if (!albumId) {
-      const favAlbum = this.favsAlbumsRepository.create({albumId: id});
+      const favAlbum = this.favsAlbumsRepository.create({ albumId: id });
       return await this.favsAlbumsRepository.manager.save(favAlbum);
     }
   }
   async deleteAlbumFromFav(id: string) {
     if (!this.validateId(id)) {
-      throw new BadRequestException('Invalid album ID'); 
+      throw new BadRequestException('Invalid album ID');
     }
-    const albumIsExist = await this.favsAlbumsRepository.findOneBy({ albumId: id });
+    const albumIsExist = await this.favsAlbumsRepository.findOneBy({
+      albumId: id,
+    });
     if (!albumIsExist) {
-      throw new NotFoundException('Album not found'); 
+      throw new NotFoundException('Album not found');
     }
     await this.favsAlbumsRepository.delete({ albumId: id });
   }
   async addArtist(id: string) {
     if (!this.validateId(id)) {
-      throw new BadRequestException('Invalid artist ID'); 
+      throw new BadRequestException('Invalid artist ID');
     }
-    const artistIsExist =  await this.artistsRepository.findOneBy({ id });
+    const artistIsExist = await this.artistsRepository.findOneBy({ id });
     if (!artistIsExist) {
-      throw new UnprocessableEntityException('Artist not found'); 
+      throw new UnprocessableEntityException('Artist not found');
     }
-    const artistId = await this.favsArtistsRepository.findOneBy({ artistId: id });
+    const artistId = await this.favsArtistsRepository.findOneBy({
+      artistId: id,
+    });
     if (!artistId) {
-      const favArtist = this.favsArtistsRepository.create({artistId: id});
+      const favArtist = this.favsArtistsRepository.create({ artistId: id });
       return await this.favsArtistsRepository.manager.save(favArtist);
     }
   }
   async deleteArtistFromFav(id: string) {
     if (!this.validateId(id)) {
-      throw new BadRequestException('Invalid artist ID'); 
+      throw new BadRequestException('Invalid artist ID');
     }
-    const artistIsExist = await this.favsArtistsRepository.findOneBy({ artistId: id });
+    const artistIsExist = await this.favsArtistsRepository.findOneBy({
+      artistId: id,
+    });
     if (!artistIsExist) {
       throw new NotFoundException('Artist not found');
     }

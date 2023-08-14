@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { AuthUser, UpdatePasswordDto } from './dto/user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserEntity } from '../entity/User';
+import { UserEntity } from '../entity/User.entity';
 import { Repository } from 'typeorm';
 import { v4 as uuidv4, validate as validateUuid } from 'uuid';
 import { instanceToPlain } from 'class-transformer';
@@ -20,14 +20,13 @@ export class UserService {
     const user = new UserEntity();
     user.id = this.generateUuid();
     user.login = newUser.login;
-    user.password= newUser.password;
-    user.version = 1,
-    user.createdAt = this.generateCurrentTime();
+    user.password = newUser.password;
+    (user.version = 1), (user.createdAt = this.generateCurrentTime());
     user.updatedAt = this.generateCurrentTime();
     await this.usersRepository.manager.save(user);
     return instanceToPlain(user);
   }
-  async getUsers(): Promise<UserEntity[]>  {
+  async getUsers(): Promise<UserEntity[]> {
     return await this.usersRepository.find();
   }
   async getUser(id: string) {
@@ -75,7 +74,7 @@ export class UserService {
     return validateUuid(id);
   }
   generateCurrentTime(): number {
-    const now = new Date().getTime(); 
+    const now = new Date().getTime();
     return now;
   }
 }

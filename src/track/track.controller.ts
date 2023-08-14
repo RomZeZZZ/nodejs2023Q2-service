@@ -31,7 +31,10 @@ export class TrackController {
   }
   @HttpCode(200)
   @Put(':id')
-  async changeTrackInformation(@Body() dto: UpdateTrackDto, @Param('id') id: string) {
+  async changeTrackInformation(
+    @Body() dto: UpdateTrackDto,
+    @Param('id') id: string,
+  ) {
     return await this.trackService.updateTrack(dto, id);
   }
   @HttpCode(204)

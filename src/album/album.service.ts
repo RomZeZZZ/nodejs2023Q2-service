@@ -6,7 +6,7 @@ import {
 import { AlbumReq, UpdateAlbumDto } from './dto/album.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { AlbumEntity } from '../entity/Albums';
+import { AlbumEntity } from '../entity/Albums.entity';
 import { v4 as uuidv4, validate as validateUuid } from 'uuid';
 import { instanceToPlain } from 'class-transformer';
 
@@ -63,14 +63,14 @@ export class AlbumService {
     await this.albumRepository.delete(id);
   }
   generateUuid(): string {
-    const uuid = uuidv4(); 
+    const uuid = uuidv4();
     return uuid;
   }
   validateId(id: string): boolean {
     return validateUuid(id);
   }
   generateCurrentTime(): number {
-    const now = new Date().getTime(); 
+    const now = new Date().getTime();
     return now;
   }
 }

@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { TrackReq, UpdateTrackDto } from './dto/track.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { TrackEntity } from '../entity/Track';
+import { TrackEntity } from '../entity/Track.entity';
 import { Repository } from 'typeorm';
 import { v4 as uuidv4, validate as validateUuid } from 'uuid';
 import { instanceToPlain } from 'class-transformer';
@@ -71,7 +71,7 @@ export class TrackService {
     return validateUuid(id);
   }
   generateCurrentTime(): number {
-    const now = new Date().getTime(); 
+    const now = new Date().getTime();
     return now;
   }
 }
