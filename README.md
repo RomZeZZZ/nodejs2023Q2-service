@@ -1,5 +1,6 @@
 # Home Library Service
 
+Clone repository and checkout to branch - `part_2`.
 
 ## Installing NPM modules
 
@@ -7,13 +8,13 @@
 npm install
 ```
 
-## Running application
+## Running application using docker compose
 
 ```
-npm start
+docker-compose up
 ```
 
-by default the application uses PORT 4000
+by default the application uses and exposes PORT 4000
 
 PORT value is stored into .env file
 
@@ -25,20 +26,12 @@ To run all tests without authorization
 
 ```
 npm run test
-```
-
-To run only one of all test suites
 
 ```
-npm run test -- <path to suite>
-```
 
-### Auto-fix and format
+## Generating migration
 
 ```
-npm run lint
-```
+npm run migration:generate && npm run migration:run
 
-```
-npm run format
 ```

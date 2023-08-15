@@ -1,0 +1,48 @@
+
+version: '3.1'
+
+services:
+  app:
+    restart: always
+    image: romanneudakh/nodejs-library
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args: 
+        - PORT=$PORT
+    ports: 
+      - $PORT:$PORT
+    networks: 
+      - user-network
+
+  db:
+    image: postgres:15.4
+    restart: always
+    volumes:
+      - postgres-db-data:/var/lib/postgresql/data
+      - postgres-db-logs:/logs
+    environment:
+      POSTGRES_PASSWORD: $POSTGRESS_PASSWORD
+      POSTGRES_USER: $POSTGRES_USER
+      POSTGRES_DB: $POSTGRESS_DB
+    networks: 
+      - user-network
+
+  migrations:
+    image: romanneudakh/nodejs-library
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: "no"
+    command: sh -c "npm run migration:generate && npm run migration:run"
+    depends_on:
+      - app
+      - db
+    networks: 
+      - user-network
+
+volumes:
+  postgres-db-data:
+  postgres-db-logs:
+networks:
+  user-network:

@@ -16,27 +16,30 @@ export class TrackController {
   constructor(private trackService: TrackService) {}
   @HttpCode(200)
   @Get()
-  getTracks() {
-    return this.trackService.getTracks();
+  async getTracks() {
+    return await this.trackService.getTracks();
   }
   @HttpCode(200)
   @Get(':id')
-  getTrack(@Param('id') id: string) {
-    return this.trackService.getTrack(id);
+  async getTrack(@Param('id') id: string) {
+    return await this.trackService.getTrack(id);
   }
   @HttpCode(201)
   @Post()
-  createTrack(@Body() newTrackRequestData: TrackReq) {
-    return this.trackService.createTrack(newTrackRequestData);
+  async createTrack(@Body() newTrackRequestData: TrackReq) {
+    return await this.trackService.createTrack(newTrackRequestData);
   }
   @HttpCode(200)
   @Put(':id')
-  changeTrackInformation(@Body() dto: UpdateTrackDto, @Param('id') id: string) {
-    return this.trackService.updateTrack(dto, id);
+  async changeTrackInformation(
+    @Body() dto: UpdateTrackDto,
+    @Param('id') id: string,
+  ) {
+    return await this.trackService.updateTrack(dto, id);
   }
   @HttpCode(204)
   @Delete(':id')
-  deleteTrack(@Param('id') id: string) {
-    this.trackService.deletetrack(id);
+  async deleteTrack(@Param('id') id: string) {
+    await this.trackService.deletetrack(id);
   }
 }
