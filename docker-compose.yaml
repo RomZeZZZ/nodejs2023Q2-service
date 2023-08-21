@@ -4,7 +4,7 @@ version: '3.1'
 services:
   app:
     restart: always
-    image: romanneudakh/nodejs-library
+    image: romanneudakh/nodejs-library:v2
     build:
       context: .
       dockerfile: Dockerfile
@@ -29,7 +29,7 @@ services:
       - user-network
 
   migrations:
-    image: romanneudakh/nodejs-library
+    image: romanneudakh/nodejs-library:v2
     build:
       context: .
       dockerfile: Dockerfile
