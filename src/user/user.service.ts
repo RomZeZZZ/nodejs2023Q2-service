@@ -10,6 +10,8 @@ import { UserEntity } from '../entity/User.entity';
 import { Repository } from 'typeorm';
 import { v4 as uuidv4, validate as validateUuid } from 'uuid';
 import { instanceToPlain } from 'class-transformer';
+import { config } from 'dotenv';
+config();
 @Injectable()
 export class UserService {
   constructor(
@@ -17,6 +19,7 @@ export class UserService {
     private usersRepository: Repository<UserEntity>,
   ) {}
   async createUser(newUser: AuthUser) {
+    // console.log(process.env.POSTGRESS_DB);
     const user = new UserEntity();
     user.id = this.generateUuid();
     user.login = newUser.login;

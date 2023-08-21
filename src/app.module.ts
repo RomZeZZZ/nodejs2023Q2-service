@@ -9,6 +9,9 @@ import { FavsModule } from './favs/favs.module';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { dataSourceOptions } from './database/configDb';
+import { AuthModule } from './auth/auth.module';
+import { APP_GUARD } from '@nestjs/core';
+import { AuthGuard } from './auth/auth.guard';
 @Module({
   imports: [
     UserModule,
@@ -18,8 +21,15 @@ import { dataSourceOptions } from './database/configDb';
     FavsModule,
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot(dataSourceOptions),
+    AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
+  ],
 })
 export class AppModule {}

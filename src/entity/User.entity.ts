@@ -1,5 +1,5 @@
 import { Exclude } from 'class-transformer';
-import { Entity, Column, PrimaryColumn, Collection } from 'typeorm';
+import { Entity, Column, PrimaryColumn } from 'typeorm';
 
 @Entity()
 export class UserEntity {
