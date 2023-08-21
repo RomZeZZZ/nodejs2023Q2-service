@@ -5,7 +5,7 @@ import { UserEntity } from '../entity/User.entity';
 import { Repository } from 'typeorm';
 import { UserService } from '../user/user.service';
 import { Auth } from './dto/auth.dto';
-
+import * as bcrypt from 'bcrypt';
 @Injectable()
 export class AuthService {
   constructor(
@@ -18,17 +18,21 @@ export class AuthService {
 
   async signIn(username: string, pass: string) {
     const user = await this.usersRepository.findOneBy({ login: username });
-    if (user?.password !== pass) {
+    if (!(await this.comparePasswords(pass, user.password))) {
       throw new UnauthorizedException();
     }
     const payload = { sub: user.id, username: user.login };
-    console.log(payload);
     return {
       accessToken: await this.jwtService.signAsync(payload),
     };
   }
   async signup(signUpDto: Auth) {
-    console.log(signUpDto);
     return await this.usersService.createUser(signUpDto);
+  }
+  async comparePasswords(
+    enteredPassword: string,
+    hashedPassword: string,
+  ): Promise<boolean> {
+    return await bcrypt.compare(enteredPassword, hashedPassword);
   }
 }

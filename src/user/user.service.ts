@@ -11,6 +11,7 @@ import { Repository } from 'typeorm';
 import { v4 as uuidv4, validate as validateUuid } from 'uuid';
 import { instanceToPlain } from 'class-transformer';
 import { config } from 'dotenv';
+import * as bcrypt from 'bcrypt';
 config();
 @Injectable()
 export class UserService {
@@ -19,12 +20,12 @@ export class UserService {
     private usersRepository: Repository<UserEntity>,
   ) {}
   async createUser(newUser: AuthUser) {
-    // console.log(process.env.POSTGRESS_DB);
     const user = new UserEntity();
     user.id = this.generateUuid();
     user.login = newUser.login;
-    user.password = newUser.password;
-    (user.version = 1), (user.createdAt = this.generateCurrentTime());
+    user.password = await this.hashPassword(newUser.password);
+    user.version = 1;
+    user.createdAt = this.generateCurrentTime();
     user.updatedAt = this.generateCurrentTime();
     await this.usersRepository.manager.save(user);
     return instanceToPlain(user);
@@ -60,10 +61,10 @@ export class UserService {
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    if (user.password !== newPass.oldPassword) {
+    if (!(await this.comparePasswords(newPass.oldPassword, user.password))) {
       throw new ForbiddenException('Old password is wrong');
     }
-    user.password = newPass.newPassword;
+    user.password = await this.hashPassword(newPass.newPassword);
     user.version = user.version + 1;
     user.updatedAt = this.generateCurrentTime();
     await this.usersRepository.save(user);
@@ -79,5 +80,15 @@ export class UserService {
   generateCurrentTime(): number {
     const now = new Date().getTime();
     return now;
+  }
+  async hashPassword(password: string): Promise<string> {
+    const saltOrRounds = 10;
+    return await bcrypt.hash(password, saltOrRounds);
+  }
+  async comparePasswords(
+    enteredPassword: string,
+    hashedPassword: string,
+  ): Promise<boolean> {
+    return await bcrypt.compare(enteredPassword, hashedPassword);
   }
 }
