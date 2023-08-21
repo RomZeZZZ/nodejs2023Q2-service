@@ -20,7 +20,6 @@ export class TrackService {
     const track = new TrackEntity();
     track.id = this.generateUuid();
     track.name = newTrackRequestData.name;
-    const id = newTrackRequestData.artistId;
     track.artistId = newTrackRequestData.artistId || null;
     track.albumId = newTrackRequestData.albumId || null;
     track.duration = newTrackRequestData.duration;
