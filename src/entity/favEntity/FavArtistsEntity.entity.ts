@@ -4,7 +4,6 @@ import {
   PrimaryGeneratedColumn,
   JoinColumn,
   OneToOne,
-  ManyToOne,
 } from 'typeorm';
 import { ArtistEntity } from '../Artist.entity';
 
